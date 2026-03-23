@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy, Terms &amp; Contact — HireReady</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav class="riq-nav">
+    <div class="nav-inner">
+      <a class="riq-logo" href="index.html">Hire<span>Ready</span></a>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html#features">Features</a>
+        <a class="nav-link" href="index.html#how">How it works</a>
+        <a class="btn btn-outline" href="login.html" target="_blank">Log in</a>
+        <a class="btn btn-solid" href="register.html" target="_blank">Get started</a>
+      </div>
+      <button class="nav-toggle" onclick="document.querySelector('.nav-mobile').classList.toggle('open')">☰</button>
+    </div>
+    <div class="nav-mobile">
+      <a class="nav-link" href="index.html#features">Features</a>
+      <a class="nav-link" href="index.html#how">How it works</a>
+      <a class="btn btn-outline" href="login.html" target="_blank">Log in</a>
+      <a class="btn btn-solid" href="register.html" target="_blank">Get started</a>
+    </div>
+  </nav>
+
+  <!-- PAGE BODY -->
+  <div class="legal-wrap">
+
+    <!-- ── Sticky side nav ── -->
+    <aside class="legal-sidenav">
+      <a href="index.html" class="legal-back">← Back to home</a>
+      <div class="legal-sidenav-label">On this page</div>
+      <ul class="legal-nav-list">
+        <li><a href="#privacy" class="active" data-section="privacy"><span class="nav-icon">🔒</span> Privacy Policy</a>
+        </li>
+        <li><a href="#terms" data-section="terms"><span class="nav-icon">📋</span> Terms of Service</a></li>
+        <li><a href="#contact" data-section="contact"><span class="nav-icon">✉️</span> Contact Us</a></li>
+      </ul>
+    </aside>
+
+    <!-- ── Main content ── -->
+    <main class="legal-content">
+
+      <!-- ════════════════════════════════
+           PRIVACY POLICY
+      ════════════════════════════════ -->
+      <section id="privacy" class="legal-section">
+        <div class="legal-section-header">
+          <div class="section-icon-wrap">🔒</div>
+          <div>
+            <div class="legal-section-title">Privacy Policy</div>
+            <div class="legal-section-sub">How we collect, use, and protect your data</div>
+          </div>
+        </div>
+
+        <span class="last-updated">Last updated: January 2025</span>
+
+        <div class="legal-card">
+          <span class="legal-card-icon">💡</span>
+          <p>We believe privacy should be simple. We only collect what we need to provide the service, we never sell
+            your data, and you can delete your account at any time.</p>
+        </div>
+
+        <div class="legal-body">
+          <h3>1. Information We Collect</h3>
+          <p>When you use HireReady, we collect the following types of information:</p>
+          <ul>
+            <li><strong>Account information</strong> — your name and email address when you register.</li>
+            <li><strong>Resume content</strong> — the text extracted from uploaded PDF or DOCX files for analysis
+              purposes.</li>
+            <li><strong>Job descriptions</strong> — any job description text you paste for matching analysis.</li>
+            <li><strong>Usage data</strong> — page views, feature usage, and session duration to improve the product.
+            </li>
+            <li><strong>Device information</strong> — browser type, operating system, and approximate location (country
+              level).</li>
+          </ul>
+
+          <h3>2. How We Use Your Information</h3>
+          <p>We use the information we collect to:</p>
+          <ul>
+            <li>Provide, maintain, and improve the HireReady analysis service.</li>
+            <li>Generate ATS scores, keyword match results, and skill gap reports.</li>
+            <li>Train and improve our machine learning models — only using anonymized, aggregated data.</li>
+            <li>Send transactional emails (account confirmation, password reset).</li>
+            <li>Respond to your support requests and feedback.</li>
+          </ul>
+
+          <h3>3. Data Storage &amp; Security</h3>
+          <p>Your data is stored securely on servers located in India. We use industry-standard encryption (AES-256 at
+            rest, TLS 1.3 in transit) for all data. Resume files are processed in isolated environments and are not
+            shared between users.</p>
+
+          <div class="legal-card">
+            <span class="legal-card-icon">🛡️</span>
+            <p>We do not sell, rent, or share your personal information or resume content with third parties for
+              marketing purposes — ever.</p>
+          </div>
+
+          <h3>4. Data Retention</h3>
+          <p>We retain your resume data for as long as your account is active. If you delete your account, all
+            associated data — including uploaded resumes and analysis results — is permanently deleted within 30 days.
+          </p>
+
+          <h3>5. Cookies</h3>
+          <p>We use only essential cookies required to keep you logged in and maintain your session. We do not use
+            tracking cookies or third-party advertising cookies.</p>
+
+          <h3>6. Your Rights</h3>
+          <p>You have the right to:</p>
+          <ul>
+            <li>Access a copy of all personal data we hold about you.</li>
+            <li>Correct inaccurate information.</li>
+            <li>Request deletion of your data at any time.</li>
+            <li>Export your analysis history in JSON format.</li>
+            <li>Withdraw consent for optional data processing.</li>
+          </ul>
+          <p>To exercise any of these rights, contact us at <a href="#contact" class="link">privacy@HireReady.ai</a>.
+          </p>
+
+          <h3>7. Changes to This Policy</h3>
+          <p>We may update this Privacy Policy from time to time. We will notify registered users of significant changes
+            via email at least 14 days before they take effect. Continued use of the service after changes constitutes
+            acceptance.</p>
+        </div>
+      </section>
+
+
+      <!-- ════════════════════════════════
+           TERMS OF SERVICE
+      ════════════════════════════════ -->
+      <section id="terms" class="legal-section">
+        <div class="legal-section-header">
+          <div class="section-icon-wrap">📋</div>
+          <div>
+            <div class="legal-section-title">Terms of Service</div>
+            <div class="legal-section-sub">The rules that govern your use of HireReady</div>
+          </div>
+        </div>
+
+        <span class="last-updated">Last updated: January 2025</span>
+
+        <div class="legal-card">
+          <span class="legal-card-icon">📌</span>
+          <p>By creating an account or using HireReady, you agree to these Terms. Please read them carefully. If you
+            disagree, you should not use the service.</p>
+        </div>
+
+        <div class="legal-body">
+          <h3>1. Eligibility</h3>
+          <p>You must be at least 13 years old to use HireReady. By using the service, you confirm that you meet this
+            requirement and that the information you provide is accurate and complete.</p>
+
+          <h3>2. Your Account</h3>
+          <p>You are responsible for maintaining the security of your account credentials and for all activity that
+            occurs under your account. Notify us immediately at <a href="#contact" class="link">support@HireReady.ai</a>
+            if you believe your account has been compromised.</p>
+          <ul>
+            <li>Do not share your account with others.</li>
+            <li>Do not create accounts by automated means.</li>
+            <li>One account per person for free-tier users.</li>
+          </ul>
+
+          <h3>3. Acceptable Use</h3>
+          <p>You agree to use HireReady only for lawful purposes. You must not:</p>
+          <ul>
+            <li>Upload files containing malware, malicious code, or illegal content.</li>
+            <li>Attempt to reverse-engineer, scrape, or extract our ML models or scoring algorithms.</li>
+            <li>Use the service to analyze resumes of other individuals without their consent.</li>
+            <li>Upload content that infringes third-party intellectual property rights.</li>
+            <li>Attempt to circumvent rate limits or access controls.</li>
+          </ul>
+
+          <h3>4. Intellectual Property</h3>
+          <p>HireReady and all associated software, designs, trademarks, and ML models are owned by HireReady and
+            protected by applicable intellectual property laws. Your resume content remains your own — we claim no
+            ownership over it.</p>
+          <p>You grant HireReady a limited, non-exclusive license to process your resume content solely for the purpose
+            of providing the analysis service to you.</p>
+
+          <h3>5. Service Availability</h3>
+          <p>We strive to maintain high uptime but do not guarantee uninterrupted access. We may perform maintenance,
+            updates, or modifications at any time. We are not liable for any loss caused by service unavailability.</p>
+
+          <h3>6. Disclaimer of Warranties</h3>
+          <p>HireReady is provided "as is" without warranties of any kind. Our ATS scores and analysis results are
+            estimates based on statistical models trained on historical data — they do not guarantee job interview or
+            employment outcomes. Results may vary.</p>
+
+          <div class="legal-card">
+            <span class="legal-card-icon">⚠️</span>
+            <p>ATS scores are indicators to help you improve your resume, not guarantees of how any specific employer's
+              system will evaluate it. Every ATS system is different.</p>
+          </div>
+
+          <h3>7. Limitation of Liability</h3>
+          <p>To the maximum extent permitted by law, HireReady shall not be liable for any indirect, incidental,
+            special,
+            consequential, or punitive damages arising from your use of or inability to use the service, even if we have
+            been advised of the possibility of such damages.</p>
+
+          <h3>8. Termination</h3>
+          <p>We reserve the right to suspend or terminate accounts that violate these Terms without prior notice. You
+            may close your account at any time from your account settings. Termination of your account does not affect
+            any provisions of these Terms that are intended to survive termination.</p>
+
+          <h3>9. Governing Law</h3>
+          <p>These Terms are governed by the laws of India. Any disputes arising from your use of HireReady shall be
+            subject to the exclusive jurisdiction of the courts located in Chandigarh, India.</p>
+
+          <h3>10. Changes to These Terms</h3>
+          <p>We may revise these Terms at any time. Continued use of the service following notice of changes constitutes
+            your acceptance of the revised Terms.</p>
+        </div>
+      </section>
+
+
+      <!-- ════════════════════════════════
+           CONTACT
+      ════════════════════════════════ -->
+      <section id="contact" class="legal-section">
+        <div class="legal-section-header">
+          <div class="section-icon-wrap">✉️</div>
+          <div>
+            <div class="legal-section-title">Contact Us</div>
+            <div class="legal-section-sub">We'd love to hear from you — usually reply within 24 hours</div>
+          </div>
+        </div>
+
+        <div class="contact-info-block">
+          <div class="contact-info-row">
+            <div class="contact-info-icon">📧</div>
+            <div>
+              <div style="font-weight:600;font-size:0.85rem;margin-bottom:2px">General enquiries</div>
+              <div>hello@HireReady.ai</div>
+            </div>
+          </div>
+          <div class="contact-info-row">
+            <div class="contact-info-icon">🛡️</div>
+            <div>
+              <div style="font-weight:600;font-size:0.85rem;margin-bottom:2px">Privacy &amp; data requests</div>
+              <div>privacy@HireReady.ai</div>
+            </div>
+          </div>
+          <div class="contact-info-row">
+            <div class="contact-info-icon">🐛</div>
+            <div>
+              <div style="font-weight:600;font-size:0.85rem;margin-bottom:2px">Bug reports &amp; feedback</div>
+              <div>support@HireReady.ai</div>
+            </div>
+          </div>
+          <div class="contact-info-row">
+            <div class="contact-info-icon">🤝</div>
+            <div>
+              <div style="font-weight:600;font-size:0.85rem;margin-bottom:2px">Partnerships &amp; press</div>
+              <div>partnerships@HireReady.ai</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact form -->
+        <div id="contactFormWrap">
+          <div class="legal-body" style="margin-bottom:20px">
+            <h3 style="margin-top:0">Send us a message</h3>
+            <p>Fill in the form below and we'll get back to you as soon as possible.</p>
+          </div>
+
+          <div class="contact-grid">
+            <div class="form-group">
+              <label class="form-label" for="contactName">Your name</label>
+              <input type="text" id="contactName" class="form-input" placeholder="Aizza Singh" />
+              <div class="form-error" id="contactNameErr">Name is required.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contactEmail">Email address</label>
+              <input type="email" id="contactEmail" class="form-input" placeholder="you@email.com" />
+              <div class="form-error" id="contactEmailErr">Valid email is required.</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="contactSubject">Subject</label>
+            <select id="contactSubject" class="form-input" style="cursor:pointer">
+              <option value="">Select a topic…</option>
+              <option value="general">General question</option>
+              <option value="privacy">Privacy or data request</option>
+              <option value="bug">Bug report</option>
+              <option value="feedback">Feature feedback</option>
+              <option value="partnership">Partnership / press</option>
+              <option value="other">Other</option>
+            </select>
+            <div class="form-error" id="contactSubjectErr">Please select a topic.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="contactMessage">Message</label>
+            <textarea id="contactMessage" class="form-textarea" rows="5" placeholder="Tell us what's on your mind…"
+              style="min-height:140px"></textarea>
+            <div class="form-error" id="contactMsgErr">Message cannot be empty.</div>
+          </div>
+
+          <button class="btn btn-solid btn-lg" onclick="submitContact()">Send message</button>
+        </div>
+
+        <!-- Success state -->
+        <div id="contactSuccess" class="form-success">
+          <div class="form-success-icon">✅</div>
+          <h5>Message sent!</h5>
+          <p>Thanks for reaching out. We'll get back to you within 24 hours.</p>
+          <button class="btn btn-outline" style="margin-top:16px" onclick="resetContact()">Send another message</button>
+        </div>
+
+      </section>
+
+    </main>
+  </div><!-- /legal-wrap -->
+
+  <!-- FOOTER -->
+  <footer class="riq-footer">
+    <div class="footer-inner">
+      <a class="riq-logo" href="index.html">Hire<span>Ready</span></a>
+      <div class="footer-links">
+        <a href="legal.html#privacy">Privacy</a>
+        <a href="legal.html#terms">Terms</a>
+        <a href="legal.html#contact">Contact</a>
+      </div>
+      <div class="footer-copy">© 2025 HireReady. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Smooth-scroll nav links & active state ───────────────
+    const navLinks = document.querySelectorAll('.legal-nav-list a');
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href').replace('#', '');
+        const target = document.getElementById(targetId);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // ── Highlight active section on scroll ───────────────────
+    const sections = document.querySelectorAll('.legal-section');
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navLinks.forEach(a => a.classList.toggle('active', a.dataset.section === id));
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+
+    sections.forEach(s => observer.observe(s));
+
+    // ── Contact form submit ───────────────────────────────────
+    function showFieldErr(id, visible) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('show', visible);
+    }
+    function markField(id, invalid) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('invalid', invalid);
+    }
+
+    function submitContact() {
+      let valid = true;
+
+      const nameEl = document.getElementById('contactName');
+      const emailEl = document.getElementById('contactEmail');
+      const subEl = document.getElementById('contactSubject');
+      const msgEl = document.getElementById('contactMessage');
+
+      const nameOk = nameEl.value.trim() !== '';
+      markField('contactName', !nameOk); showFieldErr('contactNameErr', !nameOk);
+      if (!nameOk) valid = false;
+
+      const emailOk = emailEl.value.includes('@') && emailEl.value.trim() !== '';
+      markField('contactEmail', !emailOk); showFieldErr('contactEmailErr', !emailOk);
+      if (!emailOk) valid = false;
+
+      const subOk = subEl.value !== '';
+      markField('contactSubject', !subOk); showFieldErr('contactSubjectErr', !subOk);
+      if (!subOk) valid = false;
+
+      const msgOk = msgEl.value.trim().length > 5;
+      markField('contactMessage', !msgOk); showFieldErr('contactMsgErr', !msgOk);
+      if (!msgOk) valid = false;
+
+      if (!valid) return;
+
+      // Show success (real submission would POST to backend)
+      document.getElementById('contactFormWrap').style.display = 'none';
+      document.getElementById('contactSuccess').classList.add('show');
+    }
+
+    function resetContact() {
+      document.getElementById('contactFormWrap').style.display = '';
+      document.getElementById('contactSuccess').classList.remove('show');
+      document.getElementById('contactName').value = '';
+      document.getElementById('contactEmail').value = '';
+      document.getElementById('contactSubject').value = '';
+      document.getElementById('contactMessage').value = '';
+    }
+
+    // ── Handle direct anchor links on page load ───────────────
+    window.addEventListener('load', () => {
+      const hash = window.location.hash;
+      if (hash) {
+        setTimeout(() => {
+          const target = document.querySelector(hash);
+          if (target) target.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    });
+  </script>
+</body>
+
+</html>

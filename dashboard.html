@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — HireReady</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="app-page">
+
+  <!-- SIDEBAR -->
+  <aside class="riq-sidebar" id="sidebar" aria-label="Sidebar navigation">
+    <div class="sidebar-logo">
+      <a href="index.html" class="riq-logo">Hire<span>Ready</span></a>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="sidebar-link active" data-view="dashboard"><span class="slink-icon"
+          aria-hidden="true">📊</span> Dashboard</a>
+      <a href="#" class="sidebar-link" data-view="upload"> <span class="slink-icon" aria-hidden="true">📄</span> Upload
+        Resume</a>
+      <a href="#" class="sidebar-link" data-view="jobmatch"> <span class="slink-icon" aria-hidden="true">🎯</span> Job
+        Match</a>
+      <a href="#" class="sidebar-link" data-view="skills"> <span class="slink-icon" aria-hidden="true">🔍</span> Skill
+        Analysis</a>
+      <a href="#" class="sidebar-link" data-view="myresumes"><span class="slink-icon" aria-hidden="true">📁</span> My
+        Resumes</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a href="#" class="sidebar-link"><span class="slink-icon" aria-hidden="true">⚙️</span> Settings</a>
+      <a href="#" class="sidebar-link logout" id="logoutBtn"><span class="slink-icon" aria-hidden="true">🚪</span> Log
+        out</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="app-main">
+
+    <header class="app-topbar">
+      <button class="sidebar-toggle" aria-label="Toggle sidebar"
+        onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-right">
+        <div class="topbar-avatar" id="userAvatar" aria-label="User avatar">?</div>
+      </div>
+    </header>
+
+    <main class="app-content">
+
+      <!-- ═══════════════════════════
+           VIEW: DASHBOARD
+      ═══════════════════════════ -->
+      <section id="view-dashboard" aria-label="Dashboard overview">
+
+        <div class="dash-welcome">
+          <div>
+            <h2 id="welcomeName">Welcome 👋</h2>
+            <p>Here's your resume performance overview.</p>
+          </div>
+          <button class="btn btn-solid" onclick="showView('upload')">+ Upload new resume</button>
+        </div>
+
+        <div id="dashEmpty" class="empty-state">
+          <div class="empty-icon" aria-hidden="true">📄</div>
+          <h3>No resume analyzed yet</h3>
+          <p>Upload your resume to get your ATS score, skill gaps, and personalized suggestions.</p>
+          <button class="btn btn-solid btn-lg" onclick="showView('upload')">Upload my resume</button>
+        </div>
+
+        <div id="dashData" style="display:none">
+
+          <div class="score-grid" role="list" aria-label="Score cards">
+            <div class="score-card" role="listitem">
+              <div class="score-label">ATS Score</div>
+              <div class="score-ring-wrap">
+                <svg class="score-ring" viewBox="0 0 80 80" aria-hidden="true">
+                  <circle cx="40" cy="40" r="34" class="ring-bg" />
+                  <circle cx="40" cy="40" r="34" class="ring-fill" id="ringAts" />
+                </svg>
+                <div class="score-val" id="scoreAts">—</div>
+              </div>
+              <div class="score-sub" id="subAts"></div>
+            </div>
+            <div class="score-card" role="listitem">
+              <div class="score-label">Keyword Match</div>
+              <div class="score-ring-wrap">
+                <svg class="score-ring" viewBox="0 0 80 80" aria-hidden="true">
+                  <circle cx="40" cy="40" r="34" class="ring-bg" />
+                  <circle cx="40" cy="40" r="34" class="ring-fill accent" id="ringKw" />
+                </svg>
+                <div class="score-val" id="scoreKw">—</div>
+              </div>
+              <div class="score-sub" id="subKw"></div>
+            </div>
+            <div class="score-card" role="listitem">
+              <div class="score-label">Job Fit Score</div>
+              <div class="score-ring-wrap">
+                <svg class="score-ring" viewBox="0 0 80 80" aria-hidden="true">
+                  <circle cx="40" cy="40" r="34" class="ring-bg" />
+                  <circle cx="40" cy="40" r="34" class="ring-fill" id="ringJob" />
+                </svg>
+                <div class="score-val" id="scoreJob">—</div>
+              </div>
+              <div class="score-sub" id="subJob"></div>
+            </div>
+            <div class="score-card" role="listitem">
+              <div class="score-label">Content Strength</div>
+              <div class="score-ring-wrap">
+                <svg class="score-ring" viewBox="0 0 80 80" aria-hidden="true">
+                  <circle cx="40" cy="40" r="34" class="ring-bg" />
+                  <circle cx="40" cy="40" r="34" class="ring-fill" id="ringContent" />
+                </svg>
+                <div class="score-val" id="scoreContent">—</div>
+              </div>
+              <div class="score-sub" id="subContent"></div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="dash-panel">
+              <div class="panel-head">
+                <h3>Skill Gap Analysis</h3>
+                <span class="tag-sm" id="skillRoleTag"></span>
+              </div>
+              <div class="skill-list" id="skillList"></div>
+            </div>
+            <div class="dash-panel">
+              <div class="panel-head">
+                <h3>Improvement Suggestions</h3>
+                <span class="tag-sm">Prioritized</span>
+              </div>
+              <ul class="suggestion-list" id="suggestionList"></ul>
+            </div>
+          </div>
+
+          <div class="three-one">
+            <div class="dash-panel" style="text-align:center">
+              <div class="panel-head" style="justify-content:center">
+                <h3>Resume Profile</h3>
+              </div>
+              <div class="cluster-badge" id="clusterBadge">—</div>
+              <p class="cluster-desc" id="clusterDesc"></p>
+              <div class="cluster-tags" id="clusterTags"></div>
+            </div>
+            <div class="dash-panel">
+              <div class="panel-head">
+                <h3>Recent Resumes</h3>
+                <button class="link-sm" style="background:none;border:none;cursor:pointer;padding:0"
+                  onclick="showView('upload')">Upload new →</button>
+              </div>
+              <table class="riq-table">
+                <thead>
+                  <tr>
+                    <th scope="col">File</th>
+                    <th scope="col">Uploaded</th>
+                    <th scope="col">ATS</th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody id="resumeTableBody"></tbody>
+              </table>
+              <div id="resumeTableEmpty" class="empty-mini" style="display:none">
+                No resumes yet. <button class="link-sm" style="background:none;border:none;cursor:pointer;padding:0"
+                  onclick="showView('upload')">Upload one →</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+
+      <!-- ═══════════════════════════
+           VIEW: UPLOAD
+      ═══════════════════════════ -->
+      <section id="view-upload" aria-label="Upload resume" style="display:none">
+
+        <div class="riq-steps" aria-label="Upload progress">
+          <div class="step-item active" id="stepInd1"><span class="step-circle"
+              aria-hidden="true">1</span><span>Upload</span></div>
+          <div class="step-line" aria-hidden="true"></div>
+          <div class="step-item" id="stepInd2"><span class="step-circle"
+              aria-hidden="true">2</span><span>Analyzing</span></div>
+          <div class="step-line" aria-hidden="true"></div>
+          <div class="step-item" id="stepInd3"><span class="step-circle" aria-hidden="true">3</span><span>Results</span>
+          </div>
+        </div>
+
+        <!-- step 1 -->
+        <div id="step1">
+          <div class="upload-grid">
+            <div>
+              <div class="riq-dropzone" id="dropzone" role="button" tabindex="0" aria-label="Drop zone for resume file">
+                <input type="file" id="fileInput" accept=".pdf,.docx" style="display:none"
+                  aria-label="Choose resume file" />
+                <div class="dz-icon" aria-hidden="true">📄</div>
+                <div class="dz-title">Drop your resume here</div>
+                <div class="dz-sub">PDF or DOCX · Max 5MB</div>
+                <button class="btn btn-outline" style="margin-top:16px"
+                  onclick="document.getElementById('fileInput').click()">Browse file</button>
+                <div id="fileChosen" class="dz-chosen" aria-live="polite"></div>
+              </div>
+
+              <div class="dash-panel" style="margin-top:16px">
+                <div class="panel-head">
+                  <h3>Paste Job Description</h3><span class="tag-sm">Optional</span>
+                </div>
+                <textarea class="form-textarea" id="jobDesc" rows="5"
+                  placeholder="Paste the job description here for a more accurate match score…"
+                  aria-label="Job description (optional)"></textarea>
+              </div>
+
+              <div class="upload-actions">
+                <button id="analyzeBtn" class="btn btn-solid btn-lg" onclick="startAnalysis()" disabled>Analyze
+                  resume</button>
+                <button class="btn btn-ghost" onclick="clearUpload()">Clear</button>
+              </div>
+            </div>
+
+            <div class="dash-panel">
+              <div class="panel-head">
+                <h3>Tips for best results</h3>
+              </div>
+              <ul class="tip-list">
+                <li>📎 Use your most recent resume (updated in the last 6 months)</li>
+                <li>📄 PDF format gives the most accurate text extraction</li>
+                <li>🎯 Paste a specific job description to get a job-fit score</li>
+                <li>✅ Make sure all sections have clear headings</li>
+                <li>🔢 Quantified achievements score better (e.g., "improved performance by 30%")</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- step 2: analyzing -->
+        <div id="step2" style="display:none">
+          <div class="analyzing-wrap" aria-live="polite">
+            <div class="analyze-spinner" role="status" aria-label="Analyzing resume"></div>
+            <h3>Analyzing your resume…</h3>
+            <p id="analyzeStatus">Starting analysis…</p>
+            <div class="progress-wrap">
+              <div class="progress-track">
+                <div class="progress-fill" id="progressBar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- step 3: results -->
+        <div id="step3" style="display:none">
+          <div class="results-header">
+            <div>
+              <h3>Analysis Complete</h3>
+              <p>Results for: <strong id="resultFilename"></strong></p>
+            </div>
+            <div class="results-header-btns">
+              <button class="btn btn-outline" onclick="showView('dashboard')">View Dashboard</button>
+              <button class="btn btn-ghost" onclick="resetUpload()">Analyze another</button>
+            </div>
+          </div>
+
+          <div class="score-grid">
+            <div class="score-card">
+              <div class="score-label">ATS Score</div>
+              <div class="score-ring-wrap">
+                <svg class="score-ring" viewBox="0 0 80 80" aria-hidden="true">
+                  <circle cx="40" cy="40" r="34" class="ring-bg" />
+                  <circle cx="40" cy="40" r="34" class="ring-fill" id="resRingAts" />
+                </svg>
+                <div class="score-val" id="resScoreAts">—</div>
+              </div>
+              <div class="score-sub" id="resSubAts"></div>
+            </div>
+            <div class="score-card">
+              <div class="score-label">Keyword Match</div>
+              <div class="score-ring-wrap">
+                <svg class="score-ring" viewBox="0 0 80 80" aria-hidden="true">
+                  <circle cx="40" cy="40" r="34" class="ring-bg" />
+                  <circle cx="40" cy="40" r="34" class="ring-fill accent" id="resRingKw" />
+                </svg>
+                <div class="score-val" id="resScoreKw">—</div>
+              </div>
+              <div class="score-sub" id="resSubKw"></div>
+            </div>
+            <div class="score-card">
+              <div class="score-label">Job Fit</div>
+              <div class="score-ring-wrap">
+                <svg class="score-ring" viewBox="0 0 80 80" aria-hidden="true">
+                  <circle cx="40" cy="40" r="34" class="ring-bg" />
+                  <circle cx="40" cy="40" r="34" class="ring-fill" id="resRingJob" />
+                </svg>
+                <div class="score-val" id="resScoreJob">—</div>
+              </div>
+              <div class="score-sub" id="resSubJob"></div>
+            </div>
+            <div class="score-card">
+              <div class="score-label">Content Strength</div>
+              <div class="score-ring-wrap">
+                <svg class="score-ring" viewBox="0 0 80 80" aria-hidden="true">
+                  <circle cx="40" cy="40" r="34" class="ring-bg" />
+                  <circle cx="40" cy="40" r="34" class="ring-fill" id="resRingContent" />
+                </svg>
+                <div class="score-val" id="resScoreContent">—</div>
+              </div>
+              <div class="score-sub" id="resSubContent"></div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="dash-panel">
+              <div class="panel-head">
+                <h3>Sections Detected</h3>
+              </div>
+              <div class="section-checks" id="resSections"></div>
+            </div>
+            <div class="dash-panel">
+              <div class="panel-head">
+                <h3>Top Suggestions</h3>
+              </div>
+              <ul class="suggestion-list" id="resSuggestions"></ul>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- ═══════════════════════════
+           VIEW: JOB MATCH
+      ═══════════════════════════ -->
+      <section id="view-jobmatch" aria-label="Job description match" style="display:none">
+        <div class="dash-welcome" style="margin-bottom:24px">
+          <div>
+            <h2>Job Description Match</h2>
+            <p class="text-muted">Compare your resume against any job posting.</p>
+          </div>
+        </div>
+
+        <div id="jobMatchNoResume" class="empty-state">
+          <div class="empty-icon" aria-hidden="true">🎯</div>
+          <h3>No resume on file yet</h3>
+          <p>Upload and analyze your resume first, then use this tool to compare it against job postings.</p>
+          <button class="btn btn-solid btn-lg" onclick="showView('upload')">Upload my resume</button>
+        </div>
+
+        <div id="jobMatchForm" style="display:none">
+          <div class="upload-grid">
+            <div>
+              <div class="dash-panel">
+                <div class="panel-head">
+                  <h3>Paste Job Description</h3>
+                </div>
+                <textarea class="form-textarea" id="jmJobDesc" rows="10"
+                  placeholder="Paste the full job description here…" style="min-height:200px"
+                  aria-label="Job description"></textarea>
+                <div style="margin-top:14px">
+                  <button class="btn btn-solid" onclick="runJobMatch()">Compare now</button>
+                </div>
+              </div>
+
+              <div class="dash-panel" id="jmResult" style="margin-top:16px;display:none" aria-live="polite">
+                <div class="panel-head">
+                  <h3>Match Result</h3>
+                </div>
+                <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-bottom:20px">
+                  <div class="score-ring-wrap" style="width:90px;height:90px;flex-shrink:0">
+                    <svg class="score-ring" viewBox="0 0 80 80" style="width:90px;height:90px" aria-hidden="true">
+                      <circle cx="40" cy="40" r="34" class="ring-bg" />
+                      <circle cx="40" cy="40" r="34" class="ring-fill accent" id="jmRing" />
+                    </svg>
+                    <div class="score-val" id="jmScore" style="font-size:1.2rem">—</div>
+                  </div>
+                  <div>
+                    <div style="font-weight:600;margin-bottom:4px" id="jmVerdict"></div>
+                    <div style="font-size:0.85rem;color:var(--ink-2)" id="jmComment"></div>
+                  </div>
+                </div>
+                <div style="margin-bottom:14px">
+                  <div
+                    style="font-size:0.78rem;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">
+                    Keywords found in your resume</div>
+                  <div id="jmKeywordsFound" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+                </div>
+                <div>
+                  <div
+                    style="font-size:0.78rem;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">
+                    Keywords missing from your resume</div>
+                  <div id="jmKeywordsMissing" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-panel">
+              <h3 style="margin-bottom:16px">Your latest resume info</h3>
+              <div id="jmResumePreview"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ═══════════════════════════
+           VIEW: SKILL ANALYSIS
+      ═══════════════════════════ -->
+      <section id="view-skills" aria-label="Skill analysis" style="display:none">
+        <div class="dash-welcome" style="margin-bottom:24px">
+          <div>
+            <h2>Skill Analysis</h2>
+            <p class="text-muted">Full breakdown of skills detected in your resume.</p>
+          </div>
+        </div>
+
+        <div id="skillsEmpty" class="empty-state">
+          <div class="empty-icon" aria-hidden="true">🔍</div>
+          <h3>No resume analyzed yet</h3>
+          <p>Upload your resume to see a full skill breakdown.</p>
+          <button class="btn btn-solid btn-lg" onclick="showView('upload')">Upload my resume</button>
+        </div>
+
+        <div id="skillsData" style="display:none">
+          <div class="two-col">
+            <div class="dash-panel">
+              <div class="panel-head">
+                <h3>Detected Skills</h3>
+                <span class="tag-sm" id="skillsCountTag"></span>
+              </div>
+              <div class="skill-list" id="skillsDetected"></div>
+            </div>
+            <div class="dash-panel">
+              <div class="panel-head">
+                <h3>Recommended to Add</h3>
+              </div>
+              <div class="skill-list" id="skillsRecommended"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ═══════════════════════════
+           VIEW: MY RESUMES
+      ═══════════════════════════ -->
+      <section id="view-myresumes" aria-label="My resumes" style="display:none">
+        <div class="dash-welcome" style="margin-bottom:24px">
+          <div>
+            <h2>My Resumes</h2>
+            <p class="text-muted">All resumes you have analyzed.</p>
+          </div>
+          <button class="btn btn-solid" onclick="showView('upload')">+ Upload new</button>
+        </div>
+
+        <div id="myResumesEmpty" class="empty-state">
+          <div class="empty-icon" aria-hidden="true">📁</div>
+          <h3>No resumes yet</h3>
+          <p>Upload your first resume to get started.</p>
+          <button class="btn btn-solid btn-lg" onclick="showView('upload')">Upload my resume</button>
+        </div>
+
+        <div id="myResumesData" style="display:none">
+          <div class="dash-panel">
+            <table class="riq-table">
+              <thead>
+                <tr>
+                  <th scope="col">File</th>
+                  <th scope="col">Uploaded</th>
+                  <th scope="col">ATS Score</th>
+                  <th scope="col">Job Fit</th>
+                  <th scope="col">Content</th>
+                </tr>
+              </thead>
+              <tbody id="myResumesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="user.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+
+</html>
