@@ -1,5 +1,5 @@
 # HireReady
-# ResumeIQ — AI-Powered Resume Analyzer
+# HireReady — AI-Powered Resume Analyzer
 
 > Upload your resume. Get an instant ATS score, skill gap report, keyword match analysis, and personalized improvement suggestions — powered by machine learning.
 
@@ -214,4 +214,4 @@ Built by **Aizza Singh**
 
 ---
 
-*ResumeIQ — helping job seekers understand and improve their resumes with AI.*
+*HireReady — helping job seekers understand and improve their resumes with AI.*
