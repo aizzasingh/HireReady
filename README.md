@@ -1,4 +1,3 @@
-# HireReady
 # HireReady — AI-Powered Resume Analyzer
 
 > Upload your resume. Get an instant ATS score, skill gap report, keyword match analysis, and personalized improvement suggestions — powered by machine learning.
