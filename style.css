@@ -719,7 +719,7 @@ ul {
 .step-num {
   font-family: 'DM Serif Display', serif;
   font-size: 3rem;
-  color: var(--line);
+  color: var(-line);
   line-height: 1;
   margin-bottom: 16px;
   letter-spacing: -2px;

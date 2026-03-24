@@ -3,7 +3,7 @@
 function togglePass(id, btn) {
   const input = document.getElementById(id);
   input.type = input.type === 'password' ? 'text' : 'password';
-  btn.textContent = input.type === 'password' ? '' : '🙈';
+  btn.textContent = input.type === 'password' ? '👁️' : '🙈';
 }
 
 // live password strength on register page

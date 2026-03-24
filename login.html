@@ -29,14 +29,14 @@
         <h1 class="auth-title">Welcome back</h1>
         <p class="auth-sub">Log in to your HireReady account.</p>
 
-        <div id="loginAlert" class="alert alert-danger" role="alert" aria-live="polite"></div>
+        <div id="loginAlert" class="alert alert-danger" aria-live="polite"></div>
 
         <form id="loginForm" novalidate aria-label="Login form">
           <div class="form-group">
             <label class="form-label" for="email">Email address</label>
             <input type="email" id="email" class="form-input" placeholder="you@email.com" autocomplete="email" required
               aria-describedby="emailErr" />
-            <p class="form-error" id="emailErr" role="alert">Please enter a valid email address.</p>
+            <p class="form-error" id="emailErr">Please enter a valid email address.</p>
           </div>
 
           <div class="form-group">
@@ -50,7 +50,7 @@
               <button type="button" class="eye-btn" onclick="togglePass('password', this)"
                 aria-label="Toggle password visibility">👁</button>
             </div>
-            <p class="form-error" id="passErr" role="alert">Password is required.</p>
+            <p class="form-error" id="passErr">Password is required.</p>
           </div>
 
           <div class="form-check">
