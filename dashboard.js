@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadDashboard();
 });
 
-// ── VIEW ROUTER ─────────────────────────────────────────
+// VIEW ROUTER 
 function showView(name) {
   VIEWS.forEach(v => {
     const el = document.getElementById(`view-${v}`);
@@ -58,7 +58,7 @@ function bindLogout() {
   });
 }
 
-// ── SCORE RING HELPERS ───────────────────────────────────
+// SCORE RING HELPERS 
 const CIRC = 213.6; // 2 * π * 34
 
 function setRing(id, pct) {
@@ -86,7 +86,7 @@ function renderScoreCard(ringId, valId, subId, pct) {
   }
 }
 
-// ── DASHBOARD VIEW ───────────────────────────────────────
+// DASHBOARD VIEW 
 function loadDashboard() {
   const user = getUser();
   const analysis = getAnalysis();
@@ -187,7 +187,7 @@ function renderSuggestions(containerId, suggestions) {
     </li>`).join('');
 }
 
-// ── UPLOAD + ANALYSIS FLOW ───────────────────────────────
+// UPLOAD + ANALYSIS FLOW 
 let uploadedFile = null;
 
 function initUploadZone() {
