@@ -24,7 +24,7 @@ function getResumes() {
 
 function addResume(entry) {
   const list = getResumes();
-  list.unshift(entry); // newest first
+  list.unshift(entry); // newest resume first
   if (list.length > 10) list.length = 10;
   localStorage.setItem(RESUMES_KEY, JSON.stringify(list));
 }
@@ -61,7 +61,7 @@ function injectUserUI() {
 }
 
 // redirect if no session
-function requireAuth(redirectTo = '../pages/login.html') {
+function requireAuth(redirectTo = 'login.html') {
   if (!getUser()) window.location.href = redirectTo;
 }
 

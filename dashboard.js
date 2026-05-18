@@ -10,7 +10,7 @@ const VIEW_TITLES = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  requireAuth('../pages/login.html');
+  requireAuth('login.html');
   injectUserUI();
   bindSidebarLinks();
   bindLogout();
