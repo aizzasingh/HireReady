@@ -54,7 +54,7 @@ function bindSidebarLinks() {
 function bindLogout() {
   document.getElementById('logoutBtn')?.addEventListener('click', e => {
     e.preventDefault();
-    logout('../pages/login.html');
+    logout('login.html');
   });
 }
 
