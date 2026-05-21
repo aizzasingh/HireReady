@@ -9,6 +9,32 @@ const VIEW_TITLES = {
   myresumes: 'My Resumes',
 };
 
+// skill key → display name; duplicates (e.g. postgres/postgresql) are collapsed by display name
+const SKILLS = {
+  python: 'Python', java: 'Java', javascript: 'JavaScript', typescript: 'TypeScript',
+  'c++': 'C++', 'c#': 'C#', ruby: 'Ruby', rust: 'Rust', swift: 'Swift',
+  kotlin: 'Kotlin', scala: 'Scala', php: 'PHP', matlab: 'MATLAB', bash: 'Bash',
+  golang: 'Go', 'node.js': 'Node.js', nodejs: 'Node.js',
+  html: 'HTML', css: 'CSS', react: 'React', angular: 'Angular', vue: 'Vue.js',
+  django: 'Django', flask: 'Flask', fastapi: 'FastAPI', spring: 'Spring', express: 'Express',
+  sql: 'SQL', mysql: 'MySQL', postgresql: 'PostgreSQL', postgres: 'PostgreSQL',
+  mongodb: 'MongoDB', redis: 'Redis', elasticsearch: 'Elasticsearch',
+  sqlite: 'SQLite', oracle: 'Oracle', firebase: 'Firebase', dynamodb: 'DynamoDB',
+  aws: 'AWS', azure: 'Azure', gcp: 'GCP', docker: 'Docker', kubernetes: 'Kubernetes',
+  terraform: 'Terraform', ansible: 'Ansible', jenkins: 'Jenkins', linux: 'Linux',
+  devops: 'DevOps', 'ci/cd': 'CI/CD',
+  tensorflow: 'TensorFlow', pytorch: 'PyTorch', pandas: 'Pandas', numpy: 'NumPy',
+  scikit: 'Scikit-learn', spark: 'Spark', hadoop: 'Hadoop',
+  tableau: 'Tableau', 'power bi': 'Power BI', excel: 'Excel',
+  'machine learning': 'Machine Learning', 'deep learning': 'Deep Learning', nlp: 'NLP',
+  git: 'Git', jira: 'Jira', figma: 'Figma', graphql: 'GraphQL',
+  'rest api': 'REST API', restful: 'RESTful', microservices: 'Microservices',
+  agile: 'Agile', scrum: 'Scrum', postman: 'Postman', selenium: 'Selenium',
+};
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
 document.addEventListener('DOMContentLoaded', () => {
   requireAuth('login.html');
   injectUserUI();
@@ -189,6 +215,8 @@ function renderSuggestions(containerId, suggestions) {
 
 // UPLOAD + ANALYSIS FLOW 
 let uploadedFile = null;
+let extractedResumeText = '';
+let extractionPromise = null;
 
 function initUploadZone() {
   const dropzone = document.getElementById('dropzone');
@@ -212,6 +240,11 @@ function handleFile(file) {
     return;
   }
   uploadedFile = file;
+  extractedResumeText = '';
+  extractionPromise = extractTextFromFile(file)
+    .then(text => { extractedResumeText = text; })
+    .catch(() => { extractedResumeText = ''; });
+
   const chosen = document.getElementById('fileChosen');
   if (chosen) {
     chosen.textContent = `✓  ${file.name}  (${(file.size / 1024).toFixed(1)} KB)`;
@@ -223,6 +256,8 @@ function handleFile(file) {
 
 function clearUpload() {
   uploadedFile = null;
+  extractedResumeText = '';
+  extractionPromise = null;
   const fi = document.getElementById('fileInput');
   if (fi) fi.value = '';
   const fc = document.getElementById('fileChosen');
@@ -250,9 +285,11 @@ function setUploadStep(n) {
   });
 }
 
-function startAnalysis() {
+async function startAnalysis() {
   if (!uploadedFile) return;
   setUploadStep(2);
+
+  if (extractionPromise) await extractionPromise;
 
   const statuses = [
     'Extracting text content…',
@@ -278,7 +315,7 @@ function startAnalysis() {
       clearInterval(interval);
       setTimeout(() => {
         const jobDesc = document.getElementById('jobDesc')?.value.trim() || '';
-        const result = generateAnalysis(uploadedFile.name, jobDesc);
+        const result = generateAnalysis(uploadedFile.name, jobDesc, extractedResumeText);
         saveAnalysis(result);
         addResume({
           filename: uploadedFile.name,
@@ -294,60 +331,122 @@ function startAnalysis() {
   }, 650);
 }
 
-// deterministic from filename — same file always gets same score
-function generateAnalysis(filename, jobDesc) {
-  const seed = filename.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  const rand = (min, max, salt = 0) => min + ((seed + salt * 37) % (max - min + 1));
+function generateAnalysis(filename, jobDesc, resumeText) {
+  const text = resumeText.toLowerCase();
+  const hasText = text.trim().length > 50;
 
-  const hasJD = jobDesc.length > 50;
-  const ats = rand(62, 94, 1);
-  const keyword = hasJD ? rand(55, 88, 2) : rand(40, 72, 2);
-  const jobfit = hasJD ? rand(60, 90, 3) : rand(45, 75, 3);
-  const content = rand(70, 96, 4);
+  // ── skill detection ──────────────────────────────────────
+  const presentDisplay = new Set();
+  const missingDisplay = new Set();
+  Object.entries(SKILLS).forEach(([key, display]) => {
+    if (text.includes(key)) presentDisplay.add(display);
+    else missingDisplay.add(display);
+  });
+  const presentSkills = [...presentDisplay];
+  // top 8 missing skills (exclude those already captured as present under another alias)
+  const missingSkills = [...missingDisplay].filter(d => !presentDisplay.has(d)).slice(0, 8);
 
+  // ── section detection ────────────────────────────────────
   const sections = [
-    { name: 'Career Objective', present: rand(0, 1, 5) > 0 },
-    { name: 'Skills', present: true },
-    { name: 'Work Experience', present: true },
-    { name: 'Education', present: true },
-    { name: 'Projects', present: rand(0, 1, 6) > 0 },
-    { name: 'Certifications', present: rand(0, 1, 7) > 0 },
-    { name: 'Links (LinkedIn/GitHub)', present: rand(0, 1, 8) > 0 },
+    { name: 'Career Objective', present: /objective|summary|profile/i.test(resumeText) },
+    { name: 'Skills',           present: /skills|technologies|competencies/i.test(resumeText) },
+    { name: 'Work Experience',  present: /experience|employment|work history/i.test(resumeText) },
+    { name: 'Education',        present: /education|degree|university|college|bachelor|master/i.test(resumeText) },
+    { name: 'Projects',         present: /projects?/i.test(resumeText) },
+    { name: 'Certifications',   present: /certif/i.test(resumeText) },
+    { name: 'Links (LinkedIn/GitHub)', present: /linkedin|github|portfolio/i.test(resumeText) },
   ];
+  const sectionsFound = sections.filter(s => s.present).length;
 
-  const allPresent = ['Python', 'SQL', 'Git', 'Java', 'HTML', 'CSS', 'JavaScript', 'REST APIs', 'Linux'];
-  const allMissing = ['Docker', 'Kubernetes', 'AWS', 'Azure', 'CI/CD', 'Terraform', 'Redis', 'TypeScript', 'GraphQL'];
-  const presentSkills = allPresent.slice(0, 3 + rand(0, 3, 9));
-  const missingSkills = allMissing.slice(0, 2 + rand(0, 3, 10));
+  // ── scoring (heuristic, no ML) ───────────────────────────
+  const wordCount  = resumeText.split(/\s+/).filter(Boolean).length;
+  const hasNumbers = /\d+\s*%|\d+\s*\+|\$\s*\d+|\d+\s*years?/i.test(resumeText);
 
-  const clusters = [
-    {
-      label: 'Technical / Engineering',
-      desc: 'Your resume closely matches Software Engineering profiles.',
-      tags: [{ label: 'Backend', ok: true }, { label: 'Data', ok: true }, { label: 'DevOps', ok: false }],
-    },
-    {
+  // if no real text was extracted, fall back to mild placeholder scores
+  const ats = hasText
+    ? Math.min(Math.round(
+        (sectionsFound / sections.length) * 40 +
+        Math.min(presentSkills.length * 3, 35) +
+        (wordCount > 300 ? 15 : wordCount > 100 ? 8 : 0) +
+        (hasNumbers ? 10 : 0)
+      ), 98)
+    : 55;
+
+  const content = hasText
+    ? Math.min(Math.round(
+        (sectionsFound / sections.length) * 35 +
+        Math.min(wordCount / 15, 35) +
+        (hasNumbers ? 15 : 0) +
+        (sections[0].present ? 15 : 0)
+      ), 98)
+    : 60;
+
+  // ── keyword match against JD ─────────────────────────────
+  const hasJD = jobDesc.length > 50;
+  let keyword = hasText ? 45 : 40;
+  if (hasJD) {
+    const techRe = /python|java|sql|docker|kubernetes|aws|azure|node|react|angular|typescript|redis|terraform|git|linux|agile|scrum|rest|api|cloud|spring|flask|django|mysql|mongo|nosql|spark|tableau|excel|power.?bi|figma|jira/i;
+    const jdWords = [...new Set((jobDesc.toLowerCase().match(/\b[a-z]{3,}\b/g) || []).filter(w => techRe.test(w)))];
+    if (jdWords.length) {
+      const found = jdWords.filter(k => text.includes(k));
+      keyword = Math.max(Math.min(Math.round((found.length / jdWords.length) * 100), 98), 20);
+    }
+  }
+
+  const jobfit = hasJD
+    ? Math.min(Math.round((ats * 0.5 + keyword * 0.5)), 98)
+    : Math.min(Math.round(ats * 0.85), 98);
+
+  // ── role clustering ──────────────────────────────────────
+  const dataKeys   = ['python', 'sql', 'tableau', 'power bi', 'machine learning', 'pandas', 'numpy', 'spark', 'hadoop'];
+  const mgmtKeys   = ['agile', 'scrum', 'jira', 'leadership', 'management', 'project manager'];
+  const dataScore  = dataKeys.filter(k => text.includes(k)).length;
+  const mgmtScore  = mgmtKeys.filter(k => text.includes(k)).length;
+
+  let cluster;
+  if (dataScore >= 3) {
+    cluster = {
       label: 'Data & Analytics',
       desc: 'Your resume aligns with Data Analyst / Scientist profiles.',
-      tags: [{ label: 'SQL', ok: true }, { label: 'Python', ok: true }, { label: 'ML', ok: false }],
-    },
-    {
+      tags: [
+        { label: 'SQL',    ok: text.includes('sql') },
+        { label: 'Python', ok: text.includes('python') },
+        { label: 'ML',     ok: text.includes('machine learning') || text.includes('scikit') },
+      ],
+    };
+  } else if (mgmtScore >= 2) {
+    cluster = {
       label: 'Management / Leadership',
       desc: 'Your resume matches Team Lead / Project Manager profiles.',
-      tags: [{ label: 'Leadership', ok: true }, { label: 'Agile', ok: true }, { label: 'Technical', ok: false }],
-    },
-  ];
-  const cluster = clusters[seed % clusters.length];
+      tags: [
+        { label: 'Leadership', ok: text.includes('lead') || text.includes('manag') },
+        { label: 'Agile',      ok: text.includes('agile') },
+        { label: 'Technical',  ok: presentSkills.length > 4 },
+      ],
+    };
+  } else {
+    cluster = {
+      label: 'Technical / Engineering',
+      desc: 'Your resume closely matches Software Engineering profiles.',
+      tags: [
+        { label: 'Backend',  ok: text.includes('api') || text.includes('backend') || text.includes('server') },
+        { label: 'Frontend', ok: text.includes('react') || text.includes('html') || text.includes('frontend') },
+        { label: 'DevOps',   ok: text.includes('docker') || text.includes('kubernetes') || text.includes('ci/cd') },
+      ],
+    };
+  }
 
+  // ── suggestions ──────────────────────────────────────────
   const suggestions = [];
-  if (!sections.find(s => s.name === 'Certifications')?.present)
-    suggestions.push({ priority: 'High', text: 'Add a certifications section (e.g., AWS, GCP) to boost ATS by ~8 pts.' });
-  suggestions.push({ priority: 'High', text: 'Quantify achievements in work experience with numbers and percentages.' });
+  if (!sections.find(s => s.name === 'Certifications').present)
+    suggestions.push({ priority: 'High', text: 'Add a certifications section (e.g., AWS, GCP) to boost ATS score.' });
+  if (!hasNumbers)
+    suggestions.push({ priority: 'High', text: 'Quantify achievements with numbers and percentages (e.g., "improved performance by 30%").' });
   if (missingSkills.length)
-    suggestions.push({ priority: 'Medium', text: `Add ${missingSkills.slice(0, 2).join(' and ')} — present in 80%+ of similar job postings.` });
+    suggestions.push({ priority: 'Medium', text: `Consider adding ${missingSkills.slice(0, 2).join(' and ')} — common in similar roles.` });
   if (hasJD && keyword < 70)
     suggestions.push({ priority: 'Medium', text: 'Mirror more keywords from the job description in your experience section.' });
-  if (!sections.find(s => s.name.includes('Links'))?.present)
+  if (!sections.find(s => s.name.includes('Links')).present)
     suggestions.push({ priority: 'Low', text: 'Include your LinkedIn or GitHub URL for completeness.' });
 
   return {
@@ -377,6 +476,31 @@ function renderResultsPanel(result, filename) {
   }
 
   renderSuggestions('resSuggestions', result.suggestions);
+}
+
+// ── TEXT EXTRACTION ──────────────────────────────────────
+async function extractTextFromFile(file) {
+  if (file.name.match(/\.pdf$/i)) return extractPdfText(file);
+  if (file.name.match(/\.docx$/i)) return extractDocxText(file);
+  return '';
+}
+
+async function extractPdfText(file) {
+  const buffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+  let text = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(item => item.str).join(' ') + '\n';
+  }
+  return text;
+}
+
+async function extractDocxText(file) {
+  const buffer = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({ arrayBuffer: buffer });
+  return result.value;
 }
 
 // ── JOB MATCH VIEW ───────────────────────────────────────
@@ -411,6 +535,11 @@ function loadJobMatchView() {
         </div>
       </div>`;
   }
+
+  // restore saved country preference
+  const countryEl = document.getElementById('adzunaCountry');
+  const savedCountry = localStorage.getItem('adzuna_country');
+  if (countryEl && savedCountry) countryEl.value = savedCountry;
 }
 
 function runJobMatch() {
@@ -446,6 +575,78 @@ function runJobMatch() {
   const missingEl = document.getElementById('jmKeywordsMissing');
   if (foundEl) foundEl.innerHTML = found.length ? found.map(k => `<span class="chip chip-ok">${escHtml(k)}</span>`).join('') : '<span style="font-size:.83rem;color:var(--ink-3)">None matched</span>';
   if (missingEl) missingEl.innerHTML = missing.length ? missing.map(k => `<span class="chip chip-miss">${escHtml(k)}</span>`).join('') : '<span style="font-size:.83rem;color:var(--success)">All keywords present 🎉</span>';
+}
+
+// ── ADZUNA JOB SEARCH ────────────────────────────────────
+const ADZUNA_APP_ID  = 'ddf9b801';
+const ADZUNA_APP_KEY = 'acf54272db1ba45f47041995e38ff0c8';
+
+async function loadJobsFromAdzuna() {
+  const country = document.getElementById('adzunaCountry')?.value || 'in';
+  const appId   = ADZUNA_APP_ID;
+  const appKey  = ADZUNA_APP_KEY;
+
+  localStorage.setItem('adzuna_country', country);
+
+  const analysis = getAnalysis();
+  if (!analysis) return;
+
+  const roleKeywords = {
+    'Technical / Engineering': 'software developer',
+    'Data & Analytics':        'data analyst',
+    'Management / Leadership': 'project manager',
+  };
+  const role       = roleKeywords[analysis.detectedRole] || 'software developer';
+  const topSkills  = (analysis.presentSkills || []).slice(0, 5).join(' ');
+  const whatParam  = encodeURIComponent(role);
+  const whatOr     = topSkills ? `&what_or=${encodeURIComponent(topSkills)}` : '';
+
+  const statusEl  = document.getElementById('adzunaStatus');
+  const resultsEl = document.getElementById('adzunaResults');
+  statusEl.textContent = 'Searching for matching jobs…';
+  statusEl.style.display = '';
+  resultsEl.innerHTML = '';
+
+  try {
+    const url =
+      `https://api.adzuna.com/v1/api/jobs/${country}/search/1` +
+      `?app_id=${appId}&app_key=${appKey}` +
+      `&results_per_page=8&what=${whatParam}${whatOr}`;
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`API error ${res.status} — check your credentials`);
+    const data = await res.json();
+
+    statusEl.style.display = 'none';
+
+    if (!data.results?.length) {
+      resultsEl.innerHTML = '<p style="font-size:0.85rem;color:var(--ink-3)">No jobs found. Try uploading a resume first.</p>';
+      return;
+    }
+
+    resultsEl.innerHTML = data.results.map(job => {
+      const company    = job.company?.display_name || '—';
+      const location   = job.location?.display_name || '—';
+      const salaryPart = (job.salary_min && job.salary_max)
+        ? ` · ${Math.round(job.salary_min / 1000)}k – ${Math.round(job.salary_max / 1000)}k`
+        : '';
+      return `
+        <div class="dash-panel" style="margin-bottom:10px;padding:16px 18px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap">
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:600;margin-bottom:3px">${escHtml(job.title)}</div>
+              <div style="font-size:0.83rem;color:var(--ink-2)">${escHtml(company)}</div>
+              <div style="font-size:0.78rem;color:var(--ink-3);margin-top:3px">${escHtml(location)}${escHtml(salaryPart)}</div>
+            </div>
+            <a href="${escHtml(job.redirect_url)}" target="_blank" rel="noopener noreferrer"
+               class="btn btn-outline" style="font-size:0.8rem;padding:6px 14px;flex-shrink:0;text-decoration:none">Apply →</a>
+          </div>
+        </div>`;
+    }).join('');
+  } catch (err) {
+    statusEl.textContent = `Error: ${err.message}`;
+    statusEl.style.display = '';
+  }
 }
 
 // ── SKILL ANALYSIS VIEW ──────────────────────────────────
