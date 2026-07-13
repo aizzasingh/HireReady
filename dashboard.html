@@ -10,6 +10,11 @@
 
 <body class="app-page">
 
+  <!-- COLD-START BANNER (hidden by default, shown if backend ping takes >3s) -->
+  <div id="coldStartBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#f59e0b;color:#fff;text-align:center;padding:10px 16px;font-size:0.85rem;font-weight:500">
+    ⏳ Server is waking up — this takes ~30 seconds on first load. Your request will complete automatically.
+  </div>
+
   <!-- SIDEBAR -->
   <aside class="riq-sidebar" id="sidebar" aria-label="Sidebar navigation">
     <div class="sidebar-logo">
