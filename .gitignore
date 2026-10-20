@@ -1,6 +1,5 @@
 # environment secrets — NEVER commit these
 backend/.env
-backend/.env.example
 .env
 
 # Python

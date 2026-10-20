@@ -1,7 +1,11 @@
 // shared helpers — load this before auth.js and dashboard.js
 
-// Point this at your Render backend URL in production
-const API_BASE = 'https://hireready-bbu1.onrender.com';
+// Use the local API while developing; use Render from the deployed site.
+const LOCAL_API_BASE = 'http://127.0.0.1:8000';
+const PRODUCTION_API_BASE = 'https://hireready-bbu1.onrender.com';
+const API_BASE = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+  ? LOCAL_API_BASE
+  : PRODUCTION_API_BASE;
 
 const USER_KEY     = 'riq_user';
 const TOKEN_KEY    = 'riq_token';

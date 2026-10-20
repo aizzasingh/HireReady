@@ -1,216 +1,124 @@
-# HireReady — AI-Powered Resume Analyzer
+# HireReady — Resume Analyzer
 
-> Upload your resume. Get an instant ATS score, skill gap report, keyword match analysis, and personalized improvement suggestions — powered by machine learning.
+HireReady helps job seekers review a resume against general ATS checks and an optional job description. It provides scores, detected skills, keyword matches, suggested improvements, saved analysis history, and job-search results.
 
----
+## What is included
 
-## 📸 Pages
+- A responsive HTML, CSS, and vanilla JavaScript frontend
+- Account registration and login with JWT authentication
+- PDF and DOCX resume uploads (up to 5 MB)
+- Resume text extraction and heuristic ATS/content scoring
+- Job-description keyword matching using explicit skill matches and TF-IDF similarity
+- PostgreSQL-backed users and resume-analysis history
+- An Adzuna job-search proxy
 
-| Page | Description |
-|------|-------------|
-| **Landing** | Hero, features, how-it-works, CTA |
-| **Login / Register** | Split-panel auth with password strength meter |
-| **Dashboard** | Scores, skill gaps, suggestions, resume history |
-| **Upload & Analysis** | 3-step flow: upload → analyze → results |
-| **Job Match** | Paste a JD and get a keyword match score |
-| **Skill Analysis** | Detected skills vs. recommended additions |
-| **My Resumes** | Table of all analyzed resumes |
-| **Legal** | Privacy Policy, Terms of Service, Contact — single scroll page |
+The scoring is rule-based with TF-IDF text similarity. It is not a trained ATS model, and results should be treated as guidance rather than a hiring decision.
 
----
-
-## ✨ Features
-
-- **ATS Score** — measures how well a resume performs against Applicant Tracking Systems
-- **Keyword Match** — compares resume keywords against a target job description
-- **Job Fit Score** — overall alignment with the pasted job posting
-- **Content Strength** — quality and completeness of resume sections
-- **Skill Gap Analysis** — present vs. missing skills with role-specific context
-- **Resume Profile Clustering** — K-Means based role category detection (Technical / Data / Management)
-- **Actionable Suggestions** — prioritized High / Medium / Low improvement tips
-- **Job Description Matcher** — paste any JD and get found/missing keywords as chips
-- **Resume History** — stores and displays up to 10 past analyses per session
-- **Dynamic user session** — name, initials, and greeting pulled from `localStorage`; no hardcoded placeholder names
-
----
-
-## 🗂️ Project Structure
+## Project layout
 
 ```
-resume-analyzer/
-│
-├── index.html                  # Landing page
-├── legal.html                  # Privacy, Terms & Contact (single-scroll)
-│
-├── pages/
-│   ├── login.html              # Login page
-│   ├── register.html           # Registration page
-│   └── dashboard.html          # Main app — all 5 views in one file
-│
-├── css/
-│   └── style.css               # Complete design system (pure CSS)
-│
-└── js/
-    ├── user.js                 # localStorage session utilities (load first)
-    ├── auth.js                 # Login & register logic
-    ├── dashboard.js            # All dashboard views + analysis engine
-    └── main.js                 # Landing page animations
+.
+├── index.html              # Landing page
+├── login.html              # Sign-in page
+├── register.html           # Account creation page
+├── dashboard.html          # Authenticated application dashboard
+├── contact.html            # Contact and legal information
+├── style.css               # Shared styles
+├── main.js                 # Landing-page behavior
+├── auth.js                 # Login and registration behavior
+├── user.js                 # Session, API, and local-cache helpers
+├── dashboard.js            # Dashboard and upload behavior
+├── render.yaml             # Render API service configuration
+└── backend/
+    ├── main.py             # FastAPI app
+    ├── analysis.py         # Resume-analysis logic
+    ├── auth.py             # Password hashing and JWT helpers
+    ├── database.py         # SQLAlchemy setup
+    ├── models.py           # Database models
+    ├── schemas.py          # Request/response schemas
+    ├── requirements.txt    # Python dependencies
+    └── routers/            # Auth, resumes, and jobs endpoints
 ```
 
----
+## Run locally
 
-## 🛠️ Tech Stack
+### 1. Set up the backend
 
-| Layer | Technology |
-|-------|-----------|
-| Markup | HTML5 (semantic) |
-| Styling | Pure CSS — no Bootstrap, no Tailwind |
-| Scripting | Vanilla JavaScript (ES6+) |
-| Fonts | DM Serif Display + DM Sans via Google Fonts |
-| Storage | `localStorage` (session, resume history, analysis results) |
-| Backend *(planned)* | Flask (Python) |
-| Database *(planned)* | MySQL |
-| ML Models *(planned)* | Random Forest (ATS scoring), K-Means (clustering), NLP (keyword extraction) |
-
-> This repository contains the **frontend only**. Backend and ML integration are in progress.
-
----
-
-## 🚀 Getting Started
-
-No build tools or dependencies required — it's plain HTML/CSS/JS.
-
-**1. Clone the repository**
+From the repository root:
 
 ```bash
-git clone https://github.com/your-username/resume-analyzer.git
-cd resume-analyzer
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
 ```
 
-**2. Open in browser**
+Create `backend/.env` with your own values:
 
-Just open `index.html` directly in your browser:
+```env
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
+SECRET_KEY=use_a_long_random_value_here
+ADZUNA_APP_ID=your_adzuna_app_id
+ADZUNA_APP_KEY=your_adzuna_app_key
+CORS_ORIGINS=http://localhost:5500,http://127.0.0.1:5500
+```
+
+Start the API:
 
 ```bash
-# macOS
-open index.html
-
-# Windows
-start index.html
-
-# Linux
-xdg-open index.html
+uvicorn backend.main:app --reload
 ```
 
-Or serve it locally with any static server:
+The API will be available at `http://127.0.0.1:8000`. Visit `/docs` there for interactive API documentation.
+
+### 2. Run the frontend
+
+Start a static web server from the repository root:
 
 ```bash
-# Using Python
-python -m http.server 3000
-
-# Using Node.js (npx)
-npx serve .
+python3 -m http.server 5500
 ```
 
-Then visit `http://localhost:3000`.
+Then open `http://127.0.0.1:5500`.
 
----
+When opened from `localhost` or `127.0.0.1`, the frontend automatically uses the local API at `http://127.0.0.1:8000`. A deployed frontend uses the Render API URL configured in `user.js`.
 
-## 🔄 User Flow
+## API endpoints
 
-```
-Landing Page (index.html)
-       │
-       ├── Register → saves name + email to localStorage
-       │
-       └── Login → reads stored user OR derives name from email
-               │
-               └── Dashboard (pages/dashboard.html)
-                       │
-                       ├── 📊 Dashboard     — scores, skill gaps, suggestions
-                       ├── 📄 Upload        — drag & drop → analysis → results
-                       ├── 🎯 Job Match     — paste JD → keyword comparison
-                       ├── 🔍 Skill Analysis — detected vs. recommended skills
-                       └── 📁 My Resumes    — history of analyzed resumes
-```
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/health` | Health check |
+| `POST` | `/api/auth/register` | Create an account and return a token |
+| `POST` | `/api/auth/login` | Sign in and return a token |
+| `POST` | `/api/analyze` | Analyze an authenticated PDF or DOCX upload |
+| `GET` | `/api/resumes` | List the current user's latest analyses |
+| `GET` | `/api/jobs/search` | Search jobs through Adzuna |
 
----
+## Deployment
 
-## 💾 localStorage Schema
+`render.yaml` defines the FastAPI API service for Render. Configure these environment variables in Render rather than committing them:
 
-All data is stored client-side in the browser. No backend calls are made in the current version.
+- `DATABASE_URL`
+- `SECRET_KEY`
+- `ADZUNA_APP_ID`
+- `ADZUNA_APP_KEY`
+- `CORS_ORIGINS` — include the deployed frontend's exact origin
 
-| Key | Contents |
-|-----|----------|
-| `riq_user` | `{ firstName, lastName, email }` |
-| `riq_last_analysis` | Full analysis result object (scores, skills, suggestions, cluster) |
-| `riq_resumes` | Array of up to 10 resume history entries |
+The frontend currently uses the Render API URL configured in `user.js`. If that URL or the frontend domain changes, update the API base URL and the API service's `CORS_ORIGINS` value together.
 
----
+## Tests
 
-## 📐 Design System
+After installing the backend dependencies, run:
 
-All styles live in `css/style.css` using CSS custom properties.
-
-```css
---ink:     #111111   /* primary text      */
---ink-2:   #444444   /* secondary text    */
---ink-3:   #888888   /* muted / labels    */
---line:    #e8e8e8   /* borders           */
---bg:      #ffffff   /* page background   */
---bg-2:    #f7f7f5   /* subtle background */
---accent:  #3d6aff   /* blue accent       */
---success: #16a34a
---warn:    #d97706
---danger:  #dc2626
---radius:  10px
+```bash
+python3 -m unittest discover -s backend/tests
 ```
 
-**Fonts:** `DM Serif Display` (headings) · `DM Sans` (body)
+## Current limitations
 
----
+- Resumes are analyzed and their results are stored; original upload files are not retained.
+- The app supports PDF and DOCX files only.
+- Job search requires valid Adzuna credentials.
 
-## 📱 Responsive Breakpoints
+## License
 
-| Breakpoint | Changes |
-|------------|---------|
-| `≤ 1024px` | Score grid → 2 columns; upload grid → single column |
-| `≤ 900px`  | Hero image hidden; sidebar collapses to hamburger toggle; auth left panel hidden |
-| `≤ 640px`  | Nav links hidden (hamburger); features → single column; name fields stack |
-
----
-
-## 🔮 Planned Backend Integration
-
-The frontend is designed to be connected to a Flask backend with the following endpoints:
-
-```
-POST /api/analyze          → Upload resume file + JD, returns analysis JSON
-POST /api/auth/register    → Create user account
-POST /api/auth/login       → Authenticate and return session token
-GET  /api/resumes          → Fetch user's resume history
-GET  /api/resumes/:id      → Fetch single analysis result
-```
-
-ML pipeline (planned):
-- **Text extraction** — PyMuPDF / python-docx
-- **ATS scoring** — Random Forest Regressor trained on ~9,500 resume dataset
-- **Keyword matching** — TF-IDF + cosine similarity
-- **Role clustering** — K-Means (n=3 initial clusters)
-- **Skill detection** — Named Entity Recognition (spaCy)
-
----
-
-## 📄 License
-
-This project is open source under the [MIT License](LICENSE).
-
----
-
-## 🙋‍♀️ Author
-
-Built by **Aizza Singh**
-
----
-
-*HireReady — helping job seekers understand and improve their resumes with AI.*
+[MIT](LICENSE)
